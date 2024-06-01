@@ -22,6 +22,11 @@ class LogAcessoMiddleware
         LogAcesso::create([
             'log' => "$ip requisitou a rota $rota"
         ]);
-        return Response('idade Idade: 90 anos');
+
+        $resposta = $next($request);
+        
+        $resposta->setStatusCode(201, 'O status foi modificado');
+
+        return $resposta;
     }
 }
