@@ -6,7 +6,7 @@
     
     <div class="conteudo-pagina">
         <div class="titulo-pagina-2">
-            <p> Produto - Adicionar </p>
+            <p> Produto - Atualizar </p>
         </div>
 
         <div class="menu">
@@ -18,8 +18,9 @@
         <div class="informacao">
             {{ $msg ?? '' }}
             <div style="width: 30%; margin-left: auto; margin-right: auto;">
-                <form method="post" action="{{ route('produto.store') }}">
+                <form method="post" action="{{ route('produto.update', ['produto' => $produto->id]) }}">
                     @csrf
+                    @method('PUT')
                     <input type="text" name="nome" value="{{ $produto->nome ?? old('nome') }}" placeholder="Nome" class="borda-preta">
                     {{ $errors->has('nome') ? $errors->first('nome') : '' }}
                     <input type="text" name="descricao" value="{{ $produto->descricao ?? old('descricao') }}" placeholder="Descrição" class="borda-preta">
@@ -34,11 +35,10 @@
                     </select>
                     
                     {{ $errors->has('unidade_id') ? $errors->first('unidade_id') : '' }}
-                    <button type="submit" class="borda-preta">Cadastrar</button>
+                    <button type="submit" class="borda-preta">Atualizar</button>
                 </form>
             </div>
         </div>
     </div>
-
 
 @endsection
