@@ -1,12 +1,12 @@
 @extends('app.layouts.basico')
 
-@section('titulo', 'Produto')
+@section('titulo', 'Detalhes do Produto')
 
 @section('conteudo')
     
     <div class="conteudo-pagina">
         <div class="titulo-pagina-2">
-            <p> Adicionar Produto </p>
+            <p> Editar Detalhes do Produto </p>
         </div>
 
         <div class="menu">
@@ -15,14 +15,19 @@
             </ul>
         </div>
 
-        <div class="informacao">
+        <div class="informacao-pagina">
+
+            <h4>Produto</h4>
+            <div>Nome: {{ $produto_detalhe->item->nome }}</div>
+
+            <div>Descrição: {{ $produto_detalhe->item->descricao }}</div>
+
             {{ $msg ?? '' }}
             <div style="width: 30%; margin-left: auto; margin-right: auto;">
-                @component('app.produto._components.form_create_edit', ['unidades' => $unidades ?? null])
+                @component('app.produto-detalhe._components.form_create_edit', ['unidades' => $unidades, 'produto_detalhe' => $produto_detalhe ?? null])
                 @endcomponent
             </div>
         </div>
     </div>
-
 
 @endsection
