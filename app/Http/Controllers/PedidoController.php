@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Pedido;
 use App\Cliente;
-use Facade\FlareClient\Http\Client;
 
-class ClienteController extends Controller
+
+class PedidoController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,8 +16,8 @@ class ClienteController extends Controller
      */
     public function index(Request $request)
     {
-        $clientes = \App\Cliente::paginate(10);
-        return view('app.cliente.index', ['clientes' => $clientes, 'request' => $request->all()]);
+        $pedidos = Pedido::paginate(10);
+        return view('app.pedido.index', ['pedidos' => $pedidos, 'request' => $request->all()]);
     }
 
     /**
@@ -26,8 +27,9 @@ class ClienteController extends Controller
      */
     public function create()
     {
-        return view('app.cliente.create');
-    }
+        $clientes = Cliente::all();
+        return view('app.pedido.create', ['clientes' => $clientes]);
+    }   
 
     /**
      * Store a newly created resource in storage.
@@ -38,23 +40,20 @@ class ClienteController extends Controller
     public function store(Request $request)
     {
         $regras = [
-            'nome' => 'required|min:3|max:100',
+            'cliente_id' => 'exists:clientes,id',
         ];
 
         $feedback =  [
-            'required' => 'O campo :attribute é obrigatório',
-            'nome.min' => 'O campo nome deve ter no mínimo 3 caracteres',
-            'nome.max' => 'O campo nome deve ter no máximo 100 caracteres',
+            'cliente_id.exists' => 'O cliente informado não existe',
         ];
 
         $request->validate($regras, $feedback);
 
-        $cliente = new Cliente();
-        $cliente->nome = $request->get('nome');
-        $cliente->save();
+        $pedido = new Pedido();
+        $pedido->cliente_id = $request->get('cliente_id');
+        $pedido->save();
 
-        return redirect()->route('cliente.index')->with('success', 'Cliente cadastrado com sucesso!');
-
+        return redirect()->route('pedido.index')->with('success', 'Pedido cadastrado com sucesso!');
     }
 
     /**
@@ -63,10 +62,9 @@ class ClienteController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Cliente $cliente)
+    public function show($id)
     {
-        Cliente::find($cliente);
-        return view('app.cliente.show', ['cliente' => $cliente]);
+        //
     }
 
     /**

@@ -3,20 +3,20 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Cliente;
-use Facade\FlareClient\Http\Client;
+use App\Pedido;
+use App\Produto;
+use App\PedidoProduto;
 
-class ClienteController extends Controller
+class PedidoProdutoController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
-        $clientes = \App\Cliente::paginate(10);
-        return view('app.cliente.index', ['clientes' => $clientes, 'request' => $request->all()]);
+        //
     }
 
     /**
@@ -24,9 +24,11 @@ class ClienteController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Pedido $pedido)
     {
-        return view('app.cliente.create');
+        $produtos = Produto::all();
+        $pedido->produtos;
+        return view('app.pedido_produto.create', ['pedido' => $pedido, 'produtos' => $produtos]);
     }
 
     /**
@@ -35,26 +37,22 @@ class ClienteController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, Pedido $pedido)
     {
         $regras = [
-            'nome' => 'required|min:3|max:100',
+            'produto_id' => 'exists:produtos,id',
+            'quantidade' => 'required|integer|between:1,10' 
         ];
+        $feedback = [
+            'produto_id.exists' => 'O produto informado não existe', 
+            'quantidade.required' => 'O campo quantidade é obrigatório'
 
-        $feedback =  [
-            'required' => 'O campo :attribute é obrigatório',
-            'nome.min' => 'O campo nome deve ter no mínimo 3 caracteres',
-            'nome.max' => 'O campo nome deve ter no máximo 100 caracteres',
         ];
-
         $request->validate($regras, $feedback);
 
-        $cliente = new Cliente();
-        $cliente->nome = $request->get('nome');
-        $cliente->save();
+        $pedido->produtos()->attach($request->produto_id, ['quantidade' => $request->quantidade]);
 
-        return redirect()->route('cliente.index')->with('success', 'Cliente cadastrado com sucesso!');
-
+        return redirect()->route('pedido-produto.create', ['pedido' => $pedido->id]);
     }
 
     /**
@@ -63,10 +61,9 @@ class ClienteController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Cliente $cliente)
+    public function show($id)
     {
-        Cliente::find($cliente);
-        return view('app.cliente.show', ['cliente' => $cliente]);
+        //
     }
 
     /**
@@ -98,8 +95,11 @@ class ClienteController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(PedidoProduto $pedidoProduto)
     {
-        //
+        $pedidoProduto->delete();
+        return redirect()->route('pedido-produto.create', ['pedido' => $pedidoProduto->pedido_id]);
     }
+
+   
 }

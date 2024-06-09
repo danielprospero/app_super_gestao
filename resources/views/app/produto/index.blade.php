@@ -58,11 +58,21 @@
                                         <a href="#" onclick="document.getElementById('form_{{$produto->id}}').submit()">Excluir</a>
                                     </form>
                                 </td>
+                                <tr>
+                                    <td colspan="13">
+                                        <p>Pedidos</p>
+                                        @foreach ($produto->pedidos as $pedido)
+                                            <a href="{{ route('pedido-produto.create', ['pedido' => $pedido->id]) }}">
+                                                Pedido: {{ $pedido->id }},
+                                            </a>
+                                        @endforeach
+                                    </td>
+                        
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
-                {{-- {{ $protudos->appends($request)->links() }}  --}}
+                {{ $produtos->appends($request)->links() }} 
                 <br>
                 Exibindo {{ $produtos->count() }} produtos de {{ $produtos->total() }} (de {{ $produtos->firstItem() }} a {{ $produtos->lastItem() }}) 
 
